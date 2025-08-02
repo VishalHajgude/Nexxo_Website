@@ -348,36 +348,43 @@
 <section id="notify" class="bg-gray-50 py-10 px-6 text-center rounded-xl max-w-xl mx-auto">
   <h3 class="text-xl font-semibold mb-2">Want to stay updated?</h3>
   <p class="text-sm mb-4 text-gray-600">Enter your details and we’ll notify you when Nexxo is ready.</p>
-<form id="notifyForm">
-  <input type="text" name="name" placeholder="Your Name" required /><br />
-  <input type="email" name="email" placeholder="Your Email" required /><br />
-  <input type="tel" name="phone" placeholder="Phone Number" required /><br />
-  <input type="text" name="location" placeholder="Location" required /><br />
-  <button type="submit">Notify Me</button>
-  <p id="successMessage" style="display:none; color:green;">Thanks! You’ll be notified soon.</p>
-</form>
+ <form id="notifyForm">
+    <h2>Notify Me</h2>
+    <input type="text" name="name" placeholder="Full Name" required />
+    <input type="email" name="email" placeholder="Email Address" required />
+    <input type="tel" name="phone" placeholder="Phone Number" required />
+    <input type="text" name="location" placeholder="Location" required />
+    <button type="submit">Submit</button>
+    <div class="message" id="formMessage"></div>
+  </form>
 
-<script>
-  const form = document.getElementById("notifyForm");
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    const formData = new FormData(form);
+  <script>
+    const form = document.getElementById('notifyForm');
+    const message = document.getElementById('formMessage');
 
-    fetch("https://script.google.com/macros/s/AKfycbw_BXSaTJONVcow-neyvjl_QMGKL878U00jS21Qte2bQm_wSIzlx1qGF5pst1hAX2F7HQ/exec", {
-      method: "POST",
-      body: new URLSearchParams(formData),
-    })
-      .then((res) => res.text())
-      .then((data) => {
-        document.getElementById("successMessage").style.display = "block";
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = new URLSearchParams(formData);
+
+      try {
+        const response = await fetch("YOUR_SCRIPT_URL_HERE", {
+          method: "POST",
+          mode: "no-cors", // avoids CORS errors
+          body: data
+        });
+
+        // Since 'no-cors' hides response, we optimistically show success
         form.reset();
-      })
-      .catch((err) => {
-        alert("Something went wrong. Please try again later.");
-        console.error(err);
-      });
-  });
-</script>
+        message.textContent = "Thank you! You’ll be notified soon.";
+      } catch (error) {
+        message.textContent = "Something went wrong. Please try again.";
+        message.style.color = 'red';
+        console.error(error);
+      }
+    });
+  </script>
 
 
   </body>
