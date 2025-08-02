@@ -348,43 +348,33 @@
 <section id="notify" class="bg-gray-50 py-10 px-6 text-center rounded-xl max-w-xl mx-auto">
   <h3 class="text-xl font-semibold mb-2">Want to stay updated?</h3>
   <p class="text-sm mb-4 text-gray-600">Enter your details and we’ll notify you when Nexxo is ready.</p>
-
-<form id="notifyForm" class="flex flex-col gap-3">
-  <input type="text" name="name" placeholder="Your name" required />
-  <input type="tel" name="phone" placeholder="Phone number" required />
-  <input type="text" name="location" placeholder="City" required />
-  <input type="email" name="email" placeholder="Email address" required />
+<form id="notifyForm">
+  <input type="text" name="name" placeholder="Your Name" required /><br />
+  <input type="email" name="email" placeholder="Your Email" required /><br />
+  <input type="tel" name="phone" placeholder="Phone Number" required /><br />
+  <input type="text" name="location" placeholder="Location" required /><br />
   <button type="submit">Notify Me</button>
+  <p id="successMessage" style="display:none; color:green;">Thanks! You’ll be notified soon.</p>
 </form>
-<p id="notifySuccess" class="hidden text-green-600 font-medium mt-2">
-  🎉 You've subscribed for updates!
-</p>
 
 <script>
   const form = document.getElementById("notifyForm");
-  const successMsg = document.getElementById("notifySuccess");
-
-  const scriptURL = "https://script.google.com/macros/s/AKfycbxQSl1NvrmOLAFcZhohZyLWiQ__89ALAD2dZDCqXkzA3eh_WlEftqk7F0oYqqwZYy5UgA/exec";
-
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     const formData = new FormData(form);
 
-    fetch(https://script.google.com/macros/s/AKfycbw4OfG0bkYxFT19VoBbu94NZAZ0RpYR1wHIGAgRV_2qGtzdIziSYtIuqikZ8ltbu-Ww6g/exec, {
+    fetch("https://script.google.com/macros/s/AKfycbw_BXSaTJONVcow-neyvjl_QMGKL878U00jS21Qte2bQm_wSIzlx1qGF5pst1hAX2F7HQ/exec", {
       method: "POST",
-      body: formData
+      body: new URLSearchParams(formData),
     })
-      .then(response => {
-        if (response.ok) {
-          successMsg.classList.remove("hidden");
-          form.reset();
-        } else {
-          alert("Failed to submit. Try again.");
-        }
+      .then((res) => res.text())
+      .then((data) => {
+        document.getElementById("successMessage").style.display = "block";
+        form.reset();
       })
-      .catch(error => {
-        console.error("Error:", error);
-        alert("Something went wrong!");
+      .catch((err) => {
+        alert("Something went wrong. Please try again later.");
+        console.error(err);
       });
   });
 </script>
