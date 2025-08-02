@@ -370,7 +370,7 @@
     e.preventDefault();
     const formData = new FormData(form);
 
-fetch("https://script.google.com/macros/s/NEW_ID/exec", {
+fetch("https://script.google.com/macros/s/NEW_SCRIPT_ID/exec", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
@@ -382,6 +382,14 @@ fetch("https://script.google.com/macros/s/NEW_ID/exec", {
     email: form.email.value
   })
 })
+.then(response => response.json())
+.then(data => {
+  console.log("Success:", data);
+})
+.catch(error => {
+  console.error("Error:", error);
+});
+
     .catch((err) => {
       alert("Something went wrong!");
       console.error(err);
