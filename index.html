@@ -349,75 +349,44 @@
   <h3 class="text-xl font-semibold mb-2">Want to stay updated?</h3>
   <p class="text-sm mb-4 text-gray-600">Enter your details and we’ll notify you when Nexxo is ready.</p>
 
-  <form id="notifyForm" class="flex flex-col gap-3">
-    <input
-      type="text"
-      id="nameInput"
-      placeholder="Your name"
-      required
-      class="border border-gray-300 px-4 py-2 rounded-lg"
-    />
-    <input
-      type="tel"
-      id="phoneInput"
-      placeholder="Phone number"
-      required
-      class="border border-gray-300 px-4 py-2 rounded-lg"
-    />
-    <input
-      type="text"
-      id="locationInput"
-      placeholder="Your city/location"
-      required
-      class="border border-gray-300 px-4 py-2 rounded-lg"
-    />
-    <input
-      type="email"
-      id="emailInput"
-      placeholder="Email address"
-      required
-      class="border border-gray-300 px-4 py-2 rounded-lg"
-    />
-    <button
-      type="submit"
-      class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800"
-    >
-      Notify Me
-    </button>
-  </form>
-
-  <p id="notifySuccess" class="mt-4 text-green-600 font-medium hidden">
-    🎉 You've subscribed for updates! We’ll notify you soon once it’s available.
-  </p>
-</section>
+<form id="notifyForm" class="flex flex-col gap-3">
+  <input type="text" name="name" placeholder="Your name" required />
+  <input type="tel" name="phone" placeholder="Phone number" required />
+  <input type="text" name="location" placeholder="City" required />
+  <input type="email" name="email" placeholder="Email address" required />
+  <button type="submit">Notify Me</button>
+</form>
+<p id="notifySuccess" class="hidden text-green-600 font-medium mt-2">
+  🎉 You've subscribed for updates!
+</p>
 
 <script>
-  const notifyForm = document.getElementById('notifyForm');
-  const nameInput = document.getElementById('nameInput');
-  const phoneInput = document.getElementById('phoneInput');
-  const locationInput = document.getElementById('locationInput');
-  const emailInput = document.getElementById('emailInput');
-  const notifySuccess = document.getElementById('notifySuccess');
+  const form = document.getElementById("notifyForm");
+  const successMsg = document.getElementById("notifySuccess");
 
-  notifyForm.addEventListener('submit', function (e) {
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxQSl1NvrmOLAFcZhohZyLWiQ__89ALAD2dZDCqXkzA3eh_WlEftqk7F0oYqqwZYy5UgA/exec";
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
+    const formData = new FormData(form);
 
-    const name = nameInput.value.trim();
-    const phone = phoneInput.value.trim();
-    const location = locationInput.value.trim();
-    const email = emailInput.value.trim();
-
-    if (name && phone && location && email) {
-      // Optional: Send data to Google Sheets, backend, etc.
-
-      notifySuccess.classList.remove('hidden');
-
-      // Reset form fields
-      nameInput.value = '';
-      phoneInput.value = '';
-      locationInput.value = '';
-      emailInput.value = '';
-    }
+    fetch(scriptURL, {
+      method: "POST",
+      body: formData,
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.result === "success") {
+        successMsg.classList.remove("hidden");
+        form.reset();
+      } else {
+        alert("Failed: " + data.message);
+      }
+    })
+    .catch((err) => {
+      alert("Something went wrong!");
+      console.error(err);
+    });
   });
 </script>
 
