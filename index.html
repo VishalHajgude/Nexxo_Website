@@ -368,39 +368,31 @@
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const formData = new FormData(form);
 
-fetch("https://script.google.com/macros/s/AKfycbw1D52QA6AosI2CQ2TtqKv8gOZIZM1AZ374_k8HF4zLOShEG4aWZMXcc4x2T9sWhakjfQ/exec", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    name: form.name.value,
-    phone: form.phone.value,
-    location: form.location.value,
-    email: form.email.value
-  })
-})
-.then(response => response.json())
-.then(data => {
-  console.log("Success:", data);
-})
-.catch(error => {
-  console.error("Error:", error);
-});
-
-.catch(error => {
-  console.error("Error:", error);
-});
-
-    .catch((err) => {
+    fetch(scriptURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        name: form.name.value,
+        phone: form.phone.value,
+        location: form.location.value,
+        email: form.email.value
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Success:", data);
+      form.reset(); // Clear the form
+      successMsg.classList.remove("hidden"); // Show success message
+    })
+    .catch(error => {
+      console.error("Error:", error);
       alert("Something went wrong!");
-      console.error(err);
     });
   });
 </script>
 
-<p></p>    
   </body>
 </html>
