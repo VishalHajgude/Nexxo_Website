@@ -370,19 +370,18 @@
     e.preventDefault();
     const formData = new FormData(form);
 
-    fetch(scriptURL, {
-      method: "POST",
-      body: formData,
-    })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.result === "success") {
-        successMsg.classList.remove("hidden");
-        form.reset();
-      } else {
-        alert("Failed: " + data.message);
-      }
-    })
+fetch("https://script.google.com/macros/s/NEW_ID/exec", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    name: form.name.value,
+    phone: form.phone.value,
+    location: form.location.value,
+    email: form.email.value
+  })
+})
     .catch((err) => {
       alert("Something went wrong!");
       console.error(err);
