@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexxo – Smart Robot Sweeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        font-family: 'Outfit', sans-serif;
+      }
+
+      /* Enhanced popup with better animation */
+      #popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #38a169, #48bb78);
+        color: white;
+        padding: 40px 50px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        font-size: 1.6rem;
+        font-weight: 700;
+        text-align: center;
+        z-index: 9999;
+        animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+      }
+
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: translate(-50%, -60%) scale(0.7) rotate(-5deg);
+        }
+        to {
+          opacity: 1;
+          transform: translate(-50%, -50%) scale(1) rotate(0deg);
+        }
+      }
+
+      /* Floating animation */
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-15px);
+        }
+      }
+
+      .float-animation {
+        animation: float 4s ease-in-out infinite;
+      }
+
+      /* Pulse effect */
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+        }
+      }
+
+      .pulse-glow {
+        animation: pulse-glow 2s infinite;
+      }
+
+      /* Enhanced gradients */
+      .hero-gradient {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
+        position: relative;
+      }
+
+      .hero-gradient::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 80%, rgba(147, 197, 253, 0.2) 0%, transparent 50%);
+        pointer-events: none;
+      }
+
+      /* Gallery thumbnail hover effects */
+      .gallery-thumb {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .gallery-thumb::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      .gallery-thumb:hover::before {
+        left: 100%;
+      }
+
+      .gallery-thumb:hover {
+        transform: scale(1.1) rotateY(10deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        z-index: 10;
+      }
+
+      /* Enhanced button styles */
+      .btn-enhanced {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .btn-enhanced::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+      }
+
+      .btn-enhanced:hover::before {
+        left: 100%;
+      }
+
+      .btn-enhanced:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Enhanced modal */
+      .modal-enhanced {
+        backdrop-filter: blur(10px);
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .modal-content-enhanced {
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      /* Lightbox enhancements */
+      #lightbox {
+        backdrop-filter: blur(5px);
+        transition: all 0.3s ease;
+      }
+
+      #lightboxImage {
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      }
+
+      /* Feature cards hover effect */
+      .feature-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .feature-card:hover::before {
+        opacity: 1;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.2);
+      }
+
+      /* Testimonial cards enhancement */
+      .testimonial-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .testimonial-card:hover {
+        transform: translateY(-5px) rotateX(5deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Scroll animations */
+      .scroll-fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+      }
+
+      .scroll-fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Enhanced announcement bar */
+      .announcement-bar {
+        background: linear-gradient(90deg, #22c55e, #16a34a, #22c55e);
+        background-size: 200% 100%;
+        animation: shimmer 3s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+
+      /* Enhanced pricing section */
+      .pricing-highlight {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .pricing-highlight::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* Enhanced specifications grid */
+      .spec-card {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .spec-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      }
+
+      /* Enhanced form styling */
+      .form-enhanced input {
+        transition: all 0.3s ease;
+        background: linear-gradient(145deg, #ffffff, #f8fafc);
+      }
+
+      .form-enhanced input:focus {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+      }
+
+      /* Mobile responsiveness improvements */
+      @media (max-width: 768px) {
+        .hero-gradient {
+          padding: 3rem 1rem;
+        }
+        
+        #popup {
+          width: 90%;
+          margin: 0 auto;
+          padding: 30px 25px;
+          font-size: 1.3rem;
+        }
+        
+        .gallery-thumb:hover {
+          transform: scale(1.05);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-white text-gray-900">
+    <!-- Enhanced Popup -->
+    <div id="popup">🎉 Preorder received successfully!</div>
+
+    <!-- Enhanced Announcement Bar -->
+    <div class="announcement-bar text-white text-sm text-center py-3 relative z-40">
+      <div class="flex items-center justify-center gap-2">
+        <span class="animate-bounce">🔥</span>
+        <span class="font-semibold">Preorder at ₹11,499 – Offer Ends Soon!</span>
+        <a href="#preorder" class="underline ml-2 hover:text-yellow-200 transition-colors font-bold">Preorder Now</a>
+      </div>
+    </div>
+
+    <!-- Enhanced Header -->
+    <header class="bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-100">
+      <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
+        <a href="#" class="flex items-center space-x-3 group">
+          <div class="relative">
+            <img src="https://i.postimg.cc/jjpvjhtW/Chat-GPT-Image-Jul-27-2025-12-55-30-AM.png" alt="Nexxo Logo" class="h-12 w-12 rounded-full object-contain transition-transform duration-300 group-hover:scale-110" />
+            <div class="absolute inset-0 rounded-full bg-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        </a>
+        <nav class="flex gap-4">
+          <a href="#notify" class="btn-enhanced bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-md font-semibold transition-all duration-300">
+            Notify Me Once Available
+          </a>
+          <a href="#preorder" class="btn-enhanced bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl shadow-md font-semibold transition-all duration-300">Preorder</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Enhanced Hero Section -->
+    <section class="hero-gradient text-center py-24 px-4 relative overflow-hidden">
+      <div class="absolute inset-0 bg-black/10"></div>
+      <div class="relative z-10">
+        <div class="float-animation mb-6">
+          <h1 class="text-6xl md:text-7xl font-bold mb-4 text-white">
+            Meet <span class="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">Nexxo</span>
+          </h1>
+        </div>
+        <p class="text-2xl md:text-3xl text-blue-100 mb-12 font-light">India's Most Intelligent Home Cleaning Robot</p>
+        
+        <!-- Floating particles effect -->
+        <div class="absolute top-20 left-20 w-2 h-2 bg-white/30 rounded-full animate-ping"></div>
+        <div class="absolute top-40 right-32 w-1 h-1 bg-blue-300/50 rounded-full animate-pulse"></div>
+        <div class="absolute bottom-32 left-40 w-1.5 h-1.5 bg-yellow-300/40 rounded-full animate-bounce"></div>
+      </div>
+    </section>
+
+    <!-- Enhanced Pricing Section -->
+    <section id="preorder" class="pricing-highlight py-20 px-4 text-center relative">
+      <div class="relative z-10">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-5xl font-bold mb-8 text-gray-800">
+            <span class="animate-bounce inline-block">🏱</span> Limited Time Offer
+          </h2>
+          
+          <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-8 mb-8 shadow-2xl border border-white/50">
+            <p class="text-2xl mb-3 text-gray-600">Original Price: <span class="line-through text-red-500 font-bold">₹45,999</span></p>
+            <p class="text-4xl font-bold text-orange-600 mb-3">Now at ₹13,999</p>
+            <p class="text-2xl text-red-600 font-bold mb-3">Preorder Now and Get for ₹11,499 Only!</p>
+            <p class="text-lg text-gray-700">
+              🎉 You Save <span class="font-bold text-green-700 text-2xl">₹34,500</span> 
+              (<span class="font-bold text-green-700 text-2xl">75%</span>) off!
+            </p>
+          </div>
+          
+          <button onclick="openModal()" class="btn-enhanced pulse-glow bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-2xl px-12 py-4 rounded-2xl font-bold shadow-2xl">
+            <span class="flex items-center gap-3">
+              <span class="text-3xl">🔥</span>
+              Preorder at ₹11,499
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Features Section -->
+    <section class="py-20 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
+      <div class="max-w-6xl mx-auto">
+        <h3 class="text-5xl font-bold text-center mb-16 text-gray-800">
+          <span class="text-6xl">💡</span> Top Features
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-lg text-gray-800">
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">3-in-1: Vacuum + Sweep + Mop</span>
+            </div>
+          </div>
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">Remote + WiFi + Voice Control</span>
+            </div>
+          </div>
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">GYRO Planning + Bow Type Path</span>
+            </div>
+          </div>
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">Auto Recharge + Anti-Fall + Anti-Collision</span>
+            </div>
+          </div>
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">4400mAh Battery – 120+ mins Use</span>
+            </div>
+          </div>
+          <div class="feature-card p-8 bg-white shadow-xl rounded-2xl border border-gray-100">
+            <div class="flex items-center gap-4">
+              <span class="text-3xl text-green-500">✅</span>
+              <span class="font-semibold">Google Assistant, Alexa & Mobile App Compatible</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Modal Form -->
+    <div id="modal" class="modal-enhanced fixed inset-0 flex items-center justify-center z-50 hidden transition-all duration-500" style="opacity: 0;">
+      <div id="modalContent" class="modal-content-enhanced relative p-10 rounded-3xl shadow-2xl max-w-lg w-full mx-4 sm:mx-auto" style="max-height: 90vh; overflow-y: auto;">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-900 text-3xl font-bold transition-colors duration-200 hover:rotate-90 transform">&times;</button>
+        <div class="text-center mb-8">
+          <h3 class="text-3xl font-bold mb-2 text-gray-800">Preorder Now for ₹11,499</h3>
+          <p class="text-gray-600">Join thousands of happy customers!</p>
+        </div>
+        <form id="preorderForm" class="space-y-6">
+          <input type="text" name="name" placeholder="Your Name" required class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-300" />
+          <input type="email" name="email" placeholder="Your Email" required class="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none transition-all duration-300" />
+          <button type="submit" class="btn-enhanced w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-4 rounded-xl font-bold text-lg">
+            Submit Preorder
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Enhanced Gallery + Product Section -->
+    <section id="gallery" class="py-20 px-4 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <h2 class="text-5xl font-bold text-center mb-16 text-gray-800">
+          <span class="text-6xl">📸</span> Nexxo Product Gallery
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <!-- Enhanced Thumbnails -->
+          <div class="grid grid-cols-3 gap-6">
+            <img src="https://i.postimg.cc/jSfGWqL8/Screenshot-2025-07-26-at-7-22-13-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(0)">
+            <img src="https://i.postimg.cc/vTjNBCMF/Screenshot-2025-07-26-at-7-22-44-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(1)">
+            <img src="https://i.postimg.cc/43ZFm6Cd/Screenshot-2025-07-26-at-7-23-04-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(2)">
+            <img src="https://i.postimg.cc/fbwBwMXS/Screenshot-2025-07-26-at-7-23-38-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(3)">
+            <img src="https://i.postimg.cc/jC04BTt5/Screenshot-2025-07-26-at-7-24-01-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(4)">
+            <img src="https://i.postimg.cc/BnCR5YBD/Screenshot-2025-07-26-at-7-24-13-PM.png" class="gallery-thumb rounded-2xl object-cover border-4 border-gray-200 cursor-pointer aspect-square" onclick="openLightboxByIndex(5)">
+          </div>
+
+          <!-- Enhanced Main Preview -->
+          <div class="flex justify-center">
+            <div class="relative group">
+              <img id="mainImage" src="https://i.postimg.cc/jSfGWqL8/Screenshot-2025-07-26-at-7-22-13-PM.png" class="rounded-3xl max-h-[75vh] object-contain shadow-2xl border-4 border-gray-100 cursor-pointer transition-transform duration-300 group-hover:scale-105" onclick="openLightboxByIndex(0)">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhanced Lightbox -->
+        <div id="lightbox" class="fixed inset-0 bg-black/90 hidden flex items-center justify-center z-50" onclick="closeLightbox()">
+          <button onclick="closeLightbox(); event.stopPropagation()" class="absolute top-6 right-8 text-white text-4xl font-bold hover:text-gray-300 z-50 transition-all duration-200 hover:scale-110">&times;</button>
+          <button onclick="prevImage(); event.stopPropagation()" class="absolute left-6 text-white text-5xl z-50 hover:text-blue-300 transition-colors duration-200">⟨</button>
+          <div class="flex items-center justify-center w-full">
+            <img id="lightboxImage" class="max-w-full max-h-[90vh] rounded-2xl z-40" onclick="event.stopPropagation()" />
+          </div>
+          <button onclick="nextImage(); event.stopPropagation()" class="absolute right-6 text-white text-5xl z-50 hover:text-blue-300 transition-colors duration-200">⟩</button>
+        </div>
+
+        <!-- Enhanced Product Specs -->
+        <div class="mt-20 bg-gradient-to-br from-gray-50 to-blue-50 p-10 rounded-3xl shadow-2xl border border-gray-200">
+          <h3 class="text-4xl font-bold mb-10 text-center text-gray-800">
+            <span class="text-5xl">📦</span> Nexxo Smart Sweeper Specifications
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-700 text-base">
+            <ul class="space-y-4">
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>3 in 1:</strong> Vacuum + Sweep + Mop
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Remote Control,</strong> WiFi, Voice Control
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>With Water Tank</strong> & Dust Tank
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Anti-Fall,</strong> Anti-Collision, Auto Recharge
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>GYRO Planning</strong> + BowType Path
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>25W / 12V Motor</strong> | Size: Ø320×78mm
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Slim Body:</strong> 3.07" Height
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Battery:</strong> 4400mAh Li-ion / 7.4V
+              </li>
+            </ul>
+
+            <ul class="space-y-4">
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Power Adapter:</strong> DC12V 1A
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Suction Power:</strong> 2500Pa
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Dustbin:</strong> 600ml | Water Tank: 180ml
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Runtime:</strong> >120 mins | Noise: <65db
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Cleaning Area:</strong> ＞150m² | Material: ABS
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Color Options:</strong> Black / White
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Application:</strong> Tile, Wood Floor, Carpet
+              </li>
+              <li class="spec-card bg-white p-4 rounded-xl shadow-md">
+                <strong>Packaging:</strong> 350×145×400mm | N.W: 2.7kg / G.W: 3.1kg
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Why Choose Nexxo -->
+    <section class="py-20 bg-gradient-to-br from-blue-900 to-blue-800 text-white px-4 text-center relative overflow-hidden">
+      <div class="absolute inset-0 bg-black/10"></div>
+      <div class="relative z-10">
+        <h3 class="text-5xl font-bold mb-16">
+          <span class="text-6xl">🧠</span> Why Choose Nexxo?
+        </h3>
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="bg-white/10 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+            <div class="text-7xl mb-6">🇮🇳</div>
+            <h4 class="text-2xl font-bold">Designed for Indian Homes</h4>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+            <div class="text-7xl mb-6">💸</div>
+            <h4 class="text-2xl font-bold">75% Less Than Big Brands</h4>
+          </div>
+          <div class="bg-white/10 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-white/20 hover:bg-white/20 transition-all duration-300">
+            <div class="text-7xl mb-6">🔁</div>
+            <h4 class="text-2xl font-bold">Local Support & 1-Year Warranty</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Testimonials -->
+    <section class="py-20 bg-gradient-to-br from-gray-50 to-white px-4 text-center">
+      <h3 class="text-5xl font-bold mb-16 text-gray-800">
+        <span class="text-6xl">🌟</span> What Early Users Say
+      </h3>
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div class="testimonial-card bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
+          <div class="flex justify-center mb-6">
+            <div class="flex text-yellow-400 text-2xl">★★★★★</div>
+          </div>
+          <p class="text-xl text-gray-700 mb-6 italic">"Superb cleaning! My mom loves it 😍"</p>
+          <p class="text-gray-600 font-semibold">— Priya S, Mumbai</p>
+        </div>
+        <div class="testimonial-card bg-white p-8 rounded-3xl shadow-2xl border border-gray-100">
+          <div class="flex justify-center mb-6">
+            <div class="flex text-yellow-400 text-2xl">★★★★★</div>
+          </div>
+          <p class="text-xl text-gray-700 mb-6 italic">"Didn't expect this much at this price!"</p>
+          <p class="text-gray-600 font-semibold">— Rahul M, Pune</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Enhanced Notification Form -->
+    <section id="notify" class="py-20 px-6 bg-gradient-to-br from-white to-gray-50">
+      <div class="bg-gradient-to-br from-white to-blue-50 py-12 px-8 rounded-3xl shadow-2xl max-w-2xl mx-auto text-center border-2 border-blue-100">
+        <h3 class="text-4xl font-bold text-gray-800 mb-4">Want to stay updated?</h3>
+        <p class="text-lg text-gray-600 mb-10">Enter your details and we'll notify you when Nexxo is ready.</p>
+
+        <form id="notifyForm" class="form-enhanced space-y-6">
+          <input type="text" name="name" placeholder="Full Name" required class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all duration-300 text-lg" />
+          <input type="email" name="email" placeholder="Email Address" required class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all duration-300 text-lg" />
+          <input type="tel" name="phone" placeholder="Phone Number" required class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all duration-300 text-lg" />
+          <input type="text" name="location" placeholder="Location" required class="w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 focus:outline-none transition-all duration-300 text-lg" />
+          <button type="submit" class="btn-enhanced w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl text-xl transition-all duration-300">
+            Submit
+          </button>
+          <div class="text-lg mt-4 text-green-600 font-bold" id="formMessage"></div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+      // Gallery functionality
+      const galleryImages = [
+        "https://i.postimg.cc/jSfGWqL8/Screenshot-2025-07-26-at-7-22-13-PM.png",
+        "https://i.postimg.cc/vTjNBCMF/Screenshot-2025-07-26-at-7-22-44-PM.png",
+        "https://i.postimg.cc/43ZFm6Cd/Screenshot-2025-07-26-at-7-23-04-PM.png",
+        "https://i.postimg.cc/fbwBwMXS/Screenshot-2025-07-26-at-7-23-38-PM.png",
+        "https://i.postimg.cc/jC04BTt5/Screenshot-2025-07-26-at-7-24-01-PM.png",
+        "https://i.postimg.cc/BnCR5YBD/Screenshot-2025-07-26-at-7-24-13-PM.png"
+      ];
+
+      let currentIndex = 0;
+
+      function openLightboxByIndex(index) {
+        currentIndex = index;
+        document.getElementById('lightboxImage').src = galleryImages[currentIndex];
+        document.getElementById('lightbox').classList.remove('hidden');
+        document.getElementById('mainImage').src = galleryImages[currentIndex];
+      }
+
+      function closeLightbox() {
+        document.getElementById('lightbox').classList.add('hidden');
+      }
+
+      function prevImage() {
+        currentIndex = (currentIndex - 1 + galleryImages.length) % galleryImages.length;
+        document.getElementById('lightboxImage').src = galleryImages[currentIndex];
+        document.getElementById('mainImage').src = galleryImages[currentIndex];
+      }
+
+      function nextImage() {
+        currentIndex = (currentIndex + 1) % galleryImages.length;
+        document.getElementById('lightboxImage').src = galleryImages[currentIndex];
+        document.getElementById('mainImage').src = galleryImages[currentIndex];
+      }
+
+      // Show popup if preorder=1
+      document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("preorder") === "1") {
+          const popup = document.getElementById("popup");
+          if (popup) {
+            popup.style.display = "block";
+            setTimeout(() => {
+              popup.style.display = "none";
+            }, 5000);
+          }
+        }
+      });
+
+      // Modal functionality
+      const modal = document.getElementById("modal");
+      const modalContent = document.getElementById("modalContent");
+
+      function openModal() {
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+          modal.style.opacity = "1";
+        }, 10);
+      }
+
+      function closeModal() {
+        modal.style.opacity = "0";
+        setTimeout(() => {
+          modal.classList.add("hidden");
+        }, 300);
+      }
+
+      modal.addEventListener("click", (e) => {
+        if (!modalContent.contains(e.target)) closeModal();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !modal.classList.contains("hidden")) closeModal();
+      });
+
+      document.getElementById("preorderForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        window.location.href = window.location.pathname + "?preorder=1";
+      });
+
+      // Notification form functionality
+      const form = document.getElementById('notifyForm');
+      const message = document.getElementById('formMessage');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = new URLSearchParams(formData);
+
+        try {
+          await fetch("https://script.google.com/macros/s/AKfycbw_BXSaTJONVcow-neyvjl_QMGKL878U00jS21Qte2bQm_wSIzlx1qGF5pst1hAX2F7HQ/exec", {
+            method: "POST",
+            mode: "no-cors",
+            body: data
+          });
+
+          form.reset();
+          message.textContent = "✅ Thank you! You'll be notified soon.";
+          message.style.color = '#22c55e';
+        } catch (error) {
+          message.textContent = "❌ Something went wrong. Please try again.";
+          message.style.color = '#ef4444';
+          console.error(error);
+        }
+      });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+
+      // Scroll animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.scroll-fade-in').forEach(el => {
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
