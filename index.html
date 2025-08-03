@@ -1399,7 +1399,7 @@
             <div class="footer-social">
                 <a href="#"><i class="fab fa-facebook"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.instagram.com/nexxo.in"><i class="fab fa-instagram"></i></a>
                 <a href="#"><i class="fab fa-youtube"></i></a>
             </div>
             <p class="footer-copyright">
@@ -1409,51 +1409,82 @@
     </footer>
 
     <!-- Preorder Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <h3 class="modal-title">Secure Your Nexxo</h3>
-                <p class="modal-subtitle">Preorder now for just ₹11,499</p>
+<!-- Preorder Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="modal-header">
+            <div class="modal-icon">
+                <i class="fas fa-shopping-cart"></i>
             </div>
-            
-            <form id="preorderForm" class="modal-form" onsubmit="handlePreorderSubmit(event)">
-                <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" name="name" placeholder="Enter your name" required class="modal-form-input">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email Address</label>
-                    <input type="email" name="email" placeholder="Enter your email" required class="modal-form-input">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone" placeholder="Enter your phone number" required class="modal-form-input">
-                </div>
-                <button type="submit" class="btn btn-primary modal-submit">
-                    <i class="fas fa-credit-card"></i>
-                    Complete Preorder
-                </button>
-            </form>
-            
-            <div class="modal-trust">
-                <div class="trust-item">
-                    <i class="fas fa-lock" style="color: #10b981;"></i>
-                    Secure Payment
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-shield-alt" style="color: #2563eb;"></i>
-                    100% Safe
-                </div>
+            <h3 class="modal-title">Secure Your Nexxo</h3>
+            <p class="modal-subtitle">Submit your preorder to get this product for just ₹11,499 without paying now</p>
+        </div>
+
+        <form id="preorderForm" class="modal-form" onsubmit="handlePreorderSubmit(event)">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" placeholder="Enter your name" required class="modal-form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email" required class="modal-form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="phone" placeholder="Enter your phone number" required class="modal-form-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Location</label>
+                <input type="text" name="location" placeholder="Enter your city or area" required class="modal-form-input">
+            </div>
+            <button type="submit" class="btn btn-primary modal-submit">
+                <i class="fas fa-credit-card"></i>
+                Complete Preorder
+            </button>
+        </form>
+
+       <div class="modal-trust">
+            <!-- <div class="trust-item">
+                <i class="fas fa-lock" style="color: #10b981;"></i>
+                Secure Payment
+            </div> -->
+            <div class="trust-item">
+                <i class="fas fa-shield-alt" style="color: #2563eb;"></i>
+                100% Safe
             </div>
         </div>
     </div>
+</div>
+
+<!-- JavaScript for Preorder Submission -->
+<script>
+    async function handlePreorderSubmit(event) {
+        event.preventDefault();
+        const form = event.target;
+        const formData = new FormData(form);
+        const data = new URLSearchParams(formData);
+
+        try {
+            await fetch("https://script.google.com/macros/s/AKfycbx2H1CJq3OZ-9X0ULGN8ztUnod9tES1dm-tfiFqvQ8i7yXXtbeVQ5R39zGUvxvMff2z/exec", {
+                method: "POST",
+                mode: "no-cors",
+                body: data
+            });
+
+            closeModal();
+            showSuccessPopup('🎉 Preorder received successfully!');
+            form.reset();
+        } catch (error) {
+            alert("Something went wrong. Please try again.");
+            console.error("Preorder submit error:", error);
+        }
+    }
+</script>
+
 
     <!-- Lightbox -->
     <div id="lightbox" class="lightbox">
@@ -1533,22 +1564,10 @@
             document.body.style.overflow = 'auto';
         }
 
-        // Form submissions
-        function handlePreorderSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            
-            // Simulate form submission
-            setTimeout(() => {
-                closeModal();
-                showSuccessPopup('🎉 Preorder received successfully!');
-                form.reset();
-            }, 1000);
-        }
-
         function handleNotifySubmit(event) {
             event.preventDefault();
+
+            
             const form = event.target;
             const formData = new FormData(form);
             
